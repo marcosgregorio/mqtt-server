@@ -1,5 +1,0 @@
-resposta = input("Escreva a resposta ")
-if resposta == "S":
-  print("bruno é bobao")
-else:
-  print("Bruno é legal")
