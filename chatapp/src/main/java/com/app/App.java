@@ -1,40 +1,84 @@
 package com.app;
 
 import java.util.Scanner;
-import java.util.UUID;
 
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
  * Hello world!
  */
 public class App {
+
     public static void main(String[] args) throws MqttException {
-        
+        Messanger messanger = new Messanger();
         int option;
         Scanner scan = new Scanner(System.in);
-        String broker = "tcp://localhost:1883";
-        String userId = UUID.randomUUID().toString();
-        MqttAsyncClient myClient = new MqttAsyncClient(broker, userId);
-        System.out.println("Este é seu ID: \n" + userId);
 
-
-        MyCallback myCallback = new MyCallback();
-
-        myClient.setCallback(myCallback);
         System.out.println("Passei");
 
-        IMqttToken token = myClient.connect();
-
-        token.waitForCompletion();
-        myClient.subscribe("teste", 2);
-        myClient.subscribe("teste2", 0);
+        messanger.getToken().waitForCompletion();
+        messanger.getMyClient().subscribe("teste", 2);
+        messanger.getMyClient().subscribe("teste2", 0);
         String mensagem = "Testando o broooookeeeeeeeeer";
-        MqttMessage msg = new MqttMessage(mensagem.getBytes());
-        myClient.publish("teste", msg);
+
+        messanger.sendMessage("teste", mensagem);
+
+        System.out.println("Teste");
+        // System.out.println(options.setPassword(nu););
+        do {
+            System.out.println("Escolha uma opção!");
+            printOptions();
+            System.out.println("Entredaaaaaaaaaaa");
+            option = scan.nextInt();
+            scan.nextLine();
+            System.out.println("passei");
+            switch (option) {
+                case 1:
+                    System.out.println("Entreeeei");
+                    messanger.submitMessageOneToOne(scan);
+                    MyRunnable myRunnable = new MyRunnable(messanger);
+                    Thread thread = new Thread(myRunnable);
+                    thread.start();
+                    try {
+                        thread.join(); // Aguarda até que a thread termine
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case 9:
+                    System.out.println("Fechando aplicação...");
+                    break;
+                default:
+                    break;
+            }
+        } while (option != 9);
+        scan.close();
     }
 
+    public static void printOptions() {
+        System.out.println("1 - Enviar mensagem");
+        System.out.println("2 - Inscrever-se em um tópico");
+    }
+
+    public static void submitMessageOneToOne(Messanger messanger) {
+
+    }
+
+    static class MyRunnable implements Runnable {
+        private Messanger messanger;
+
+        public MyRunnable(Messanger messanger) {
+            this.messanger = messanger;
+        }
+
+        @Override
+        public void run() {
+            try {
+                messanger.submitMessageOneToOne();
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
