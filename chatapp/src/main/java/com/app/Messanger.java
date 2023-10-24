@@ -27,6 +27,7 @@ final public class Messanger {
         MyCallback myCallback = new MyCallback();
         this.myClient.setCallback(myCallback);
         this.token = myClient.connect();
+        this.myClient.subscribe(this.controllId, 1);
 
         System.out.println("Este é seu ID: \n" + userId);
     }
@@ -77,7 +78,6 @@ final public class Messanger {
     }
 
     public void submitMessageOneToOne(Scanner scan) throws MqttPersistenceException, MqttException {
-        // Scanner scan = new Scanner(System.in);
         System.out.println("Qual o ID do usuario que desejava conversar?");
         String id = scan.next();
         System.out.println("passei daqui");

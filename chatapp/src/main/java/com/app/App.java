@@ -36,14 +36,14 @@ public class App {
                 case 1:
                     System.out.println("Entreeeei");
                     messanger.submitMessageOneToOne(scan);
-                    MyRunnable myRunnable = new MyRunnable(messanger);
-                    Thread thread = new Thread(myRunnable);
-                    thread.start();
-                    try {
-                        thread.join(); // Aguarda até que a thread termine
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    // MyRunnable myRunnable = new MyRunnable(messanger);
+                    // Thread thread = new Thread(myRunnable);
+                    // thread.start();
+                    // try {
+                    //     thread.join(); // Aguarda até que a thread termine
+                    // } catch (InterruptedException e) {
+                    //     e.printStackTrace();
+                    // }
                     break;
 
                 case 9:
@@ -65,20 +65,20 @@ public class App {
 
     }
 
-    static class MyRunnable implements Runnable {
-        private Messanger messanger;
+    // static class MyRunnable implements Runnable {
+    //     private Messanger messanger;
 
-        public MyRunnable(Messanger messanger) {
-            this.messanger = messanger;
-        }
+    //     public MyRunnable(Messanger messanger) {
+    //         this.messanger = messanger;
+    //     }
 
-        @Override
-        public void run() {
-            try {
-                messanger.submitMessageOneToOne();
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    //     @Override
+    //     public void run() {
+    //         try {
+    //             messanger.submitMessageOneToOne();
+    //         } catch (MqttException e) {
+    //             e.printStackTrace();
+    //         }
+    //     }
+    // }
 }
