@@ -13,6 +13,7 @@ public class MyCallback implements MqttCallback {
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
+		// POSSO VALIDAR PELO TÓPICO
 		System.out.println(topic + "  " + message.toString());
 	}
 

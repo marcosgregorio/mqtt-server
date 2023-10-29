@@ -26,9 +26,12 @@ final public class Messanger {
         this.myClient = new MqttAsyncClient(this.broker, this.userId);
         MyCallback myCallback = new MyCallback();
         this.myClient.setCallback(myCallback);
+        
         this.token = myClient.connect();
+        token.waitForCompletion();
+        
         this.myClient.subscribe(this.controllId, 1);
-
+        
         System.out.println("Este é seu ID: \n" + userId);
     }
     
