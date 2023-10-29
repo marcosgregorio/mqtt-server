@@ -21,10 +21,9 @@ public class App {
         messanger.getMyClient().subscribe("teste2", 0);
         String mensagem = "Testando o broooookeeeeeeeeer";
 
-        messanger.sendMessage("teste", mensagem);
+        // messanger.sendMessage("teste", mensagem);
 
         System.out.println("Teste");
-        // System.out.println(options.setPassword(nu););
         do {
             System.out.println("Escolha uma opção!");
             printOptions();
@@ -33,16 +32,10 @@ public class App {
             switch (option) {
                 case 1:
                     messanger.submitMessageOneToOne(scan);
-                    // MyRunnable myRunnable = new MyRunnable(messanger);
-                    // Thread thread = new Thread(myRunnable);
-                    // thread.start();
-                    // try {
-                    //     thread.join(); // Aguarda até que a thread termine
-                    // } catch (InterruptedException e) {
-                    //     e.printStackTrace();
-                    // }
                     break;
-
+                case 2:
+                    messanger.subscribeToSpecifiedTopic(scan);
+                    break;
                 case 9:
                     System.out.println("Fechando aplicação...");
                     break;

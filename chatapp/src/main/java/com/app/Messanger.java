@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
 final public class Messanger {
 
+    private String[] signedTopics;
     private String broker = "tcp://localhost:1883";
     private MqttConnectOptions options;
     private String userId;
@@ -28,11 +29,10 @@ final public class Messanger {
         this.myClient.setCallback(myCallback);
         
         this.token = myClient.connect();
-        myCallback.setClient(myClient);
         token.waitForCompletion();
-        
+        Messanger m = this;
         this.myClient.subscribe(this.controllId, 1);
-        
+        myCallback.setClient(this);
         System.out.println("Este é seu ID: \n" + userId);
     }
     
@@ -88,5 +88,10 @@ final public class Messanger {
         String topic = id + "_Controll";
         String message = "O usuario com o ID " + this.userId + " deseja se conectar com você em um bate papo. Aprovar conexão?";
         this.sendMessage(topic, message);
+    }
+
+    public void subscribeToSpecifiedTopic(Scanner scan) throws MqttException {
+        String newTopic = scan.nextLine();
+        this.getMyClient().subscribe(newTopic, 1);
     }
 }
