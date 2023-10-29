@@ -1,5 +1,6 @@
 package com.app;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
 final public class Messanger {
 
-    private String[] signedTopics;
+    private ArrayList<String> signedTopics = new ArrayList<>();;
     private String broker = "tcp://localhost:1883";
     private MqttConnectOptions options;
     private String userId;
@@ -92,6 +93,11 @@ final public class Messanger {
 
     public void subscribeToSpecifiedTopic(Scanner scan) throws MqttException {
         String newTopic = scan.nextLine();
-        this.getMyClient().subscribe(newTopic, 1);
+        this.subscribeToTopic(newTopic, 0);
+    }
+
+    public void subscribeToTopic(String topic, int qualityOfSignal) throws MqttException {
+        this.getMyClient().subscribe(topic, 1);
+        this.signedTopics.add(topic);
     }
 }
