@@ -28,13 +28,10 @@ public class App {
         do {
             System.out.println("Escolha uma opção!");
             printOptions();
-            System.out.println("Entredaaaaaaaaaaa");
             option = scan.nextInt();
             scan.nextLine();
-            System.out.println("passei");
             switch (option) {
                 case 1:
-                    System.out.println("Entreeeei");
                     messanger.submitMessageOneToOne(scan);
                     // MyRunnable myRunnable = new MyRunnable(messanger);
                     // Thread thread = new Thread(myRunnable);

@@ -28,6 +28,7 @@ final public class Messanger {
         this.myClient.setCallback(myCallback);
         
         this.token = myClient.connect();
+        myCallback.setClient(myClient);
         token.waitForCompletion();
         
         this.myClient.subscribe(this.controllId, 1);
@@ -77,7 +78,7 @@ final public class Messanger {
 
     public void sendMessage(String topic, String message) throws MqttPersistenceException, MqttException {
         MqttMessage msg = new MqttMessage(message.getBytes());
-        this.getMyClient().publish(topic, msg);
+        IMqttToken token = this.getMyClient().publish(topic, msg);
     }
 
     public void submitMessageOneToOne(Scanner scan) throws MqttPersistenceException, MqttException {
@@ -85,7 +86,7 @@ final public class Messanger {
         String id = scan.next();
         System.out.println("passei daqui");
         String topic = id + "_Controll";
-        String message = "O usuario com o ID " + id + " deseja se conectar com você em um bate papo. Aprovar conexão?";
+        String message = "O usuario com o ID " + this.userId + " deseja se conectar com você em um bate papo. Aprovar conexão?";
         this.sendMessage(topic, message);
     }
 }
