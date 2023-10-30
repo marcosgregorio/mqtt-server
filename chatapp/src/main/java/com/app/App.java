@@ -8,8 +8,8 @@ public class App {
 
     public static void main(String[] args) throws MqttException {
         DatabaseConnection conn = new DatabaseConnection();
-        Messanger messanger = new Messanger();
-        int option;
+        Messenger messanger = new Messenger();
+        String option;
         Scanner scan = new Scanner(System.in);
 
         messanger.getToken().waitForCompletion();
@@ -17,24 +17,23 @@ public class App {
         do {
             System.out.println("Escolha uma opção!");
             printOptions();
-            option = scan.nextInt();
-            scan.nextLine();
+            option = scan.nextLine();
             switch (option) {
-                case 1:
-                    messanger.askPermissionToChat(scan);
+                case "1":
+                    messanger.askPermissionToChat();
                     break;
-                case 2:
-                    messanger.subscribeToSpecifiedTopic(scan);
+                case "2":
+                    messanger.subscribeToSpecifiedTopic();
                     break;
-                case 3:
-                    messanger.sendMessageToSpecifiedTopic(scan);
-                case 9:
+                case "3":
+                    messanger.sendMessageToSpecifiedTopic();
+                case "9":
                     System.out.println("Fechando aplicação...");
                     break;
                 default:
                     break;
             }
-        } while (option != 9);
+        } while (option != "9");
         scan.close();
     }
 
@@ -44,7 +43,7 @@ public class App {
         System.out.println("3 - Enviar mensagem para um tópico");
     }
 
-    public static void submitMessageOneToOne(Messanger messanger) {
+    public static void submitMessageOneToOne(Messenger messanger) {
 
     }
 

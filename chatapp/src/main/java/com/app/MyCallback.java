@@ -14,14 +14,14 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MyCallback implements MqttCallback {
 	private String messangerId;
-	private Messanger messanger;
+	private Messenger messanger;
 	private ArrayList<String> blockedIds = new ArrayList<>();
 
-	public Messanger getClient() {
+	public Messenger getClient() {
 		return messanger;
 	}
 
-	public void setClient(Messanger messanger) {
+	public void setClient(Messenger messanger) {
 		this.messanger = messanger;
 	}
 
@@ -58,6 +58,7 @@ public class MyCallback implements MqttCallback {
 	}
 
 	private void handleMessageOneToOne() throws MqttException {
+		System.out.println("aaaaaaaaaaaaaaaaaaa");
 		Scanner scan = new Scanner(System.in);
 
 		System.out.println(" Deseja aceitar essa conexão?\n" +
