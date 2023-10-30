@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MyCallback implements MqttCallback {
@@ -57,12 +57,12 @@ public class MyCallback implements MqttCallback {
 		return matcher.find();
 	}
 
-	private void handleMessageOneToOne() {
+	private void handleMessageOneToOne() throws MqttException {
 		Scanner scan = new Scanner(System.in);
 
-		System.out.println("Deseja aceitar essa conexão? \n " +
-				"Digite um valor maior que 0 para aprovar.\n" +
-				"Digite 9 para bloquer o atual mensageiro");
+		System.out.println(" Deseja aceitar essa conexão?\n" +
+				" Digite um valor maior que 0 para aprovar.\n" +
+				" Digite 9 para bloquer o atual mensageiro");
 		int answer = scan.nextInt();
 
 		boolean blockUser = answer == 9;
@@ -77,12 +77,14 @@ public class MyCallback implements MqttCallback {
 		scan.close();
 	}
 
-	private void createNewTopicWithMessanger() {
+	private void createNewTopicWithMessanger() throws MqttException {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		LocalDateTime currenTime = LocalDateTime.now();
 		String timeFormatted = currenTime.format(formatter);
-		String newTopic = this.messangerId + "_" + this.messanger.getMyClient().getClientId() + "_" + horaFormatada;
-		
+		String newTopic = this.messangerId + 
+			"_" + this.messanger.getMyClient().getClientId() + 
+			"_" + timeFormatted;
+
 		System.out.println("Assine o topico abaixo para poder conversar com o usuario!");
 		System.out.println(newTopic);
 		this.messanger.subscribeToTopic(newTopic, 1);
