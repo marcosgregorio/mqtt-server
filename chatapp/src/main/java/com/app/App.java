@@ -4,19 +4,15 @@ import java.util.Scanner;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-/**
- * Hello world!
- */
 public class App {
 
     public static void main(String[] args) throws MqttException {
+        Connection conn = new Connection();
         Messanger messanger = new Messanger();
         int option;
         Scanner scan = new Scanner(System.in);
 
         messanger.getToken().waitForCompletion();
-        // messanger.getMyClient().subscribe("teste", 2);
-        // messanger.getMyClient().subscribe("teste2", 0);
 
         do {
             System.out.println("Escolha uma opção!");
@@ -45,6 +41,7 @@ public class App {
     public static void printOptions() {
         System.out.println("1 - Solicitar uma conversa com um novo usuário");
         System.out.println("2 - Inscrever-se em um tópico");
+        System.out.println("3 - Enviar mensagem para um tópico");
     }
 
     public static void submitMessageOneToOne(Messanger messanger) {
