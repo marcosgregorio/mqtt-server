@@ -28,14 +28,14 @@ final public class Messanger {
         this.myClient = new MqttAsyncClient(this.broker, this.userId);
         MyCallback myCallback = new MyCallback();
         this.myClient.setCallback(myCallback);
-        
+
         this.token = myClient.connect();
         token.waitForCompletion();
         this.myClient.subscribe(this.controllId, 1);
         myCallback.setClient(this);
         System.out.println("Este é seu ID: \n" + userId);
     }
-    
+
     public String getBroker() {
         return broker;
     }
@@ -81,22 +81,52 @@ final public class Messanger {
         IMqttToken token = this.getMyClient().publish(topic, msg);
     }
 
-    public void submitMessageOneToOne(Scanner scan) throws MqttPersistenceException, MqttException {
+    public void askPermissionToChat(Scanner scan) throws MqttPersistenceException, MqttException {
         System.out.println("Qual o ID do usuario que desejava conversar?");
         String id = scan.next();
         System.out.println("passei daqui");
         String topic = id + "_Controll";
-        String message = "O usuario com o ID " + this.userId + " deseja se conectar com você em um bate papo. Aprovar conexão?";
+        String message = "O usuario com o ID " + this.userId
+                + " deseja se conectar com você em um bate papo. Aprovar conexão?";
         this.sendMessage(topic, message);
     }
 
     public void subscribeToSpecifiedTopic(Scanner scan) throws MqttException {
+        System.out.println("Digite o tópico que deseja se inscrever");
         String newTopic = scan.nextLine();
-        this.subscribeToTopic(newTopic, 0);
+        System.out.println("Digite a qualidade do sinal que deseja ter.");
+        int qualityOfSignal = scan.nextInt();
+        this.subscribeToTopic(newTopic, qualityOfSignal);
     }
 
     public void subscribeToTopic(String topic, int qualityOfSignal) throws MqttException {
-        this.getMyClient().subscribe(topic, 1);
+        this.getMyClient().subscribe(topic, qualityOfSignal);
         this.signedTopics.add(topic);
+    }
+
+    public void sendMessageToSpecifiedTopic(Scanner scan) throws MqttPersistenceException, MqttException {
+        System.out.println("Qual tópico deseja enviar a mensagem?\n" +
+                "Tópicos assinados:");
+        this.printSignedTopics();
+        int index = scan.nextInt();
+        scan.nextLine();
+
+        String selectedTopic = this.signedTopics.get(index);
+        
+        System.out.println("Digite sua mensagem: ");
+        String message = scan.nextLine();
+        scan.nextLine();
+        System.out.println("Enviando...");
+
+        this.sendMessage(selectedTopic, message);
+    }
+
+    public void printSignedTopics() {
+        int i = 0;
+
+        for (String topic : this.signedTopics) {
+            System.out.println("[" + i + "]" + " " + topic);
+            i++;
+        }
     }
 }

@@ -25,11 +25,13 @@ public class App {
             scan.nextLine();
             switch (option) {
                 case 1:
-                    messanger.submitMessageOneToOne(scan);
+                    messanger.askPermissionToChat(scan);
                     break;
                 case 2:
                     messanger.subscribeToSpecifiedTopic(scan);
                     break;
+                case 3:
+                    messanger.sendMessageToSpecifiedTopic(scan);
                 case 9:
                     System.out.println("Fechando aplicação...");
                     break;
@@ -41,7 +43,7 @@ public class App {
     }
 
     public static void printOptions() {
-        System.out.println("1 - Enviar mensagem para outro usuário");
+        System.out.println("1 - Solicitar uma conversa com um novo usuário");
         System.out.println("2 - Inscrever-se em um tópico");
     }
 
