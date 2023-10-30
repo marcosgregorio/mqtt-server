@@ -14,16 +14,10 @@ public class App {
         int option;
         Scanner scan = new Scanner(System.in);
 
-        System.out.println("Passei");
-
         messanger.getToken().waitForCompletion();
-        messanger.getMyClient().subscribe("teste", 2);
-        messanger.getMyClient().subscribe("teste2", 0);
-        String mensagem = "Testando o broooookeeeeeeeeer";
+        // messanger.getMyClient().subscribe("teste", 2);
+        // messanger.getMyClient().subscribe("teste2", 0);
 
-        // messanger.sendMessage("teste", mensagem);
-
-        System.out.println("Teste");
         do {
             System.out.println("Escolha uma opção!");
             printOptions();
@@ -47,7 +41,7 @@ public class App {
     }
 
     public static void printOptions() {
-        System.out.println("1 - Enviar mensagem");
+        System.out.println("1 - Enviar mensagem para outro usuário");
         System.out.println("2 - Inscrever-se em um tópico");
     }
 

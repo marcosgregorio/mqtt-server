@@ -82,9 +82,10 @@ public class MyCallback implements MqttCallback {
 		LocalDateTime currenTime = LocalDateTime.now();
 		String timeFormatted = currenTime.format(formatter);
 		String newTopic = this.messangerId + "_" + this.messanger.getMyClient().getClientId() + "_" + horaFormatada;
+		
 		System.out.println("Assine o topico abaixo para poder conversar com o usuario!");
-		System.out.println(this.messanger.getMyClient().getClientId());
-		this.messanger.getMyClient().subscribe(newTopic, 1);
+		System.out.println(newTopic);
+		this.messanger.subscribeToTopic(newTopic, 1);
 	}
 
 	private void blockMessanger() {

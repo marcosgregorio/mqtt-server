@@ -31,7 +31,6 @@ final public class Messanger {
         
         this.token = myClient.connect();
         token.waitForCompletion();
-        Messanger m = this;
         this.myClient.subscribe(this.controllId, 1);
         myCallback.setClient(this);
         System.out.println("Este é seu ID: \n" + userId);
