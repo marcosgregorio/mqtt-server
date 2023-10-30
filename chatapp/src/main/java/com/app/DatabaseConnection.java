@@ -1,9 +1,7 @@
 package com.app;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -14,19 +12,24 @@ public class DatabaseConnection {
         try {
             connection = (Connection) DriverManager.getConnection("jdbc:sqlite:base.db");
             Statement statement = connection.createStatement();
-            statement.executeUpdate("DROP TABLE IF EXISTS terminalroot");
-            statement.executeUpdate("CREATE TABLE terminalroot (id INTEGER, name STRING)");
-            statement.executeUpdate("INSERT INTO terminalroot VALUES(1, 'Marcos Oliveira')");
-            statement.executeUpdate("INSERT INTO terminalroot VALUES(2, 'James Gosling')");
-            ResultSet rs = statement.executeQuery("SELECT * FROM terminalroot");
-            while (rs.next()) {
-                // Ler os dados inseridos
-                System.out.println("NOME DO CARA  : " + rs.getString("name"));
-                System.out.println("IDENTIFICAÇÃO : " + rs.getInt("id"));
-            }
-
+            statement.executeUpdate("DROP TABLE IF EXISTS usuarios");
+            statement.executeUpdate("" +
+                    "CREATE TABLE usuarios ( " +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "user_id STRING UNIQUE, " +
+                        "password STRING " +
+                    ")"
+            );
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
     }
 }
