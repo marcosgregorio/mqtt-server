@@ -21,7 +21,8 @@ final public class Messenger {
     private MqttAsyncClient myClient;
     private IMqttToken token;
     private Scanner scan = new Scanner(System.in);
-
+    private ArrayList<Session> sessions = new ArrayList<>();
+    
     public Messenger() throws MqttException {
         this.options = new MqttConnectOptions();
         this.userId = UUID.randomUUID().toString();
@@ -31,6 +32,7 @@ final public class Messenger {
         this.myClient.setCallback(myCallback);
 
         this.token = myClient.connect();
+        // this.token.
         token.waitForCompletion();
         int qualityOfSignal = 1;
         this.myClient.subscribe(this.controllId, qualityOfSignal);
@@ -130,5 +132,68 @@ final public class Messenger {
             System.out.println("[" + i + "]" + " " + topic);
             i++;
         }
+        // token.get
+    }
+
+    public void showPendentSessions(Scanner scan) throws MqttException {
+        this.listSessions();
+        System.out.println("Deseja aceitar uma sessão? S/N");
+        String answer = scan.nextLine();
+        answer = answer.trim();
+        if (getConfirmAnswer(answer)) {
+            System.out.println("Selecione uma sessão");
+            int selectedSession = scan.nextInt();
+            Session session = this.getSessions().get(selectedSession);
+            this.subscribeToTopic(session.getSessionName(), 1);
+        }
+    }
+
+    private boolean getConfirmAnswer(String answer) {
+        return answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("S");
+    }
+
+    private void listSessions() {
+        if (this.getSessions().isEmpty()) {
+            System.out.println("Não há nenhuma sessão ;(");
+        }
+        int i = 0;
+
+        for (Session session : this.getSessions()) {
+            System.out.println(i + " - " + "Sessão: " + session.getSendersId());
+            i++;
+        }
+    }
+
+
+    public ArrayList<String> getSignedTopics() {
+        return signedTopics;
+    }
+
+    public void setSignedTopics(ArrayList<String> signedTopics) {
+        this.signedTopics = signedTopics;
+    }
+
+    public String getControllId() {
+        return controllId;
+    }
+
+    public void setControllId(String controllId) {
+        this.controllId = controllId;
+    }
+
+    public Scanner getScan() {
+        return scan;
+    }
+
+    public void setScan(Scanner scan) {
+        this.scan = scan;
+    }
+
+    public ArrayList<Session> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(Session sessions) {
+        this.sessions.add(sessions);
     }
 }

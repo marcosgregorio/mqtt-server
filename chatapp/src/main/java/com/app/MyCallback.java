@@ -58,24 +58,27 @@ public class MyCallback implements MqttCallback {
 	}
 
 	private void handleMessageOneToOne() throws MqttException {
-		System.out.println("aaaaaaaaaaaaaaaaaaa");
-		Scanner scan = new Scanner(System.in);
+		Session session = new Session(messangerId, messangerId);
+		this.messanger.setSessions(session);
 
-		System.out.println(" Deseja aceitar essa conexão?\n" +
-				" Digite um valor maior que 0 para aprovar.\n" +
-				" Digite 9 para bloquer o atual mensageiro");
-		int answer = scan.nextInt();
+		System.out.println("Você recebeu um pedido de sessão individual.");
+		// // Scanner scan = new Scanner(System.in);
+		
+		// System.out.println(" Deseja aceitar essa conexão?\n" +
+		// 		" Digite um valor maior que 0 para aprovar.\n" +
+		// 		" Digite 9 para bloquer o atual mensageiro");
+		// int answer = scan.nextInt();
 
-		boolean blockUser = answer == 9;
-		boolean acceptConnection = answer > 0;
-		if (blockUser) {
-			this.blockMessanger();
-		} else if (acceptConnection) {
-			this.createNewTopicWithMessanger();
-		} else {
-			System.out.println("Conexão recusada!");
-		}
-		scan.close();
+		// boolean blockUser = answer == 9;
+		// boolean acceptConnection = answer > 0;
+		// if (blockUser) {
+		// 	this.blockMessanger();
+		// } else if (acceptConnection) {
+		// 	this.createNewTopicWithMessanger();
+		// } else {
+		// 	System.out.println("Conexão recusada!");
+		// }
+		// scan.close();
 	}
 
 	private void createNewTopicWithMessanger() throws MqttException {
