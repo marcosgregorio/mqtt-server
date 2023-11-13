@@ -13,7 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
 final public class Messenger {
 
-    private ArrayList<String> signedTopics = new ArrayList<>();;
+    private ArrayList<String> signedTopics = new ArrayList<>();
     private String broker = "tcp://localhost:1883";
     private MqttConnectOptions options;
     private String userId;
@@ -21,6 +21,7 @@ final public class Messenger {
     private MqttAsyncClient myClient;
     private IMqttToken token;
     private ArrayList<Session> sessions = new ArrayList<>();
+    private ArrayList<Contact> contacts = new ArrayList<>();
     
     public Messenger() throws MqttException {
         this.options = new MqttConnectOptions();
@@ -124,7 +125,7 @@ final public class Messenger {
             System.out.println("Não encontrado o indice " + index);
             return;
         }
-        
+
         System.out.println("Digite sua mensagem: ");
         message = scan.nextLine();
         scan.nextLine();
@@ -182,6 +183,25 @@ final public class Messenger {
         }
     }
 
+    public void listOnlineUsers() {
+        this.printContacts();
+
+    }
+
+    private void printContacts() {
+        int i = 0;
+        for (Contact contact : this.getContacts()) {
+            System.out.println("[" + i + "]" + " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus());
+            i++;
+        }
+    }
+
+    public void disconnectFromBroker() throws MqttPersistenceException, MqttException {
+        String topic, msg;
+        topic = this.getControllId() + " <DISCONNECTED>";
+        msg = "O usuário" + this.getUserId() + " se desconectou";
+        this.sendMessage(topic, msg);
+    }
 
     public ArrayList<String> getSignedTopics() {
         return signedTopics;
@@ -205,5 +225,17 @@ final public class Messenger {
 
     public void setSessions(Session sessions) {
         this.sessions.add(sessions);
+    }
+
+    public ArrayList<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(ArrayList<Contact> contacts) {
+        this.contacts = contacts;
+    }
+    
+    public void addContacts(Contact contact) {
+        this.contacts.add(contact);
     }
 }

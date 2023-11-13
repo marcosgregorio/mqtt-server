@@ -29,7 +29,11 @@ public class App {
                 case "4":
                     messanger.showPendentSessions(scan);
                     break;
+                case "5":
+                    messanger.listOnlineUsers();
+                    break;
                 case "9":
+                    messanger.disconnectFromBroker();
                     System.out.println("Fechando aplicação...");
                     break;
                 default:

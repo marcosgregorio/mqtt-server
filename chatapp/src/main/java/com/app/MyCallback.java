@@ -36,6 +36,9 @@ public class MyCallback implements MqttCallback {
 		if (this.isOneToOneSolicitacion(topic)) {
 			this.handleMessageOneToOne();
 		}
+		if (this.isDisconnectedMessage(topic)) {
+			this.handleUserDisconnection();
+		}
 	}
 
 	private String extractIdFromMessage(String message) {
@@ -60,10 +63,24 @@ public class MyCallback implements MqttCallback {
 		String sessionName;
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
 		Session session = new Session(sessionName, this.messangerId);
+		Contact contact = new Contact(this.messangerId, true);
+		
 		this.messanger.getUserId();
 		this.messanger.setSessions(session);
+		this.messanger.addContacts(contact);
 
 		System.out.println("Você recebeu um pedido de sessão individual.");
+	}
+
+	private boolean isDisconnectedMessage(String topic) {
+		Pattern pattern = Pattern.compile(" <DISCONNECTED>");
+		Matcher matcher = pattern.matcher(topic);
+
+		return matcher.find();
+	}
+
+	private void handleUserDisconnection() {
+		
 	}
 
 	@Override
