@@ -14,33 +14,21 @@ public class App {
         messanger.getToken().waitForCompletion();
 
         do {
-            System.out.println("Escolha uma opção!");
             printOptions();
             option = scan.nextLine();
             switch (option) {
                 case "1":
-                    messanger.askPermissionToChat();
-                    // System.in.close();
-                    // Ver de utilizar funções do sistema operacional
-                    // e utlizar threds.
-                    
-                    // try {
-                        
-                    //     MyRunnable runnable = new MyRunnable(messanger); 
-                    //     Thread thread = new Thread(runnable);
-                    //     thread.start();
-                        
-                    // } catch (Exception e) {
-                    //     throw new Exception("Ocorreu um erro na thred de solicitação" + e.getMessage());
-                    // }
+                    messanger.askPermissionToChat(scan);
                     break;
                 case "2":
-                    messanger.subscribeToSpecifiedTopic();
+                    messanger.subscribeToSpecifiedTopic(scan);
                     break;
                 case "3":
-                    messanger.sendMessageToSpecifiedTopic();
+                    messanger.sendMessageToSpecifiedTopic(scan);
+                    break;
                 case "4":
                     messanger.showPendentSessions(scan);
+                    break;
                 case "9":
                     System.out.println("Fechando aplicação...");
                     break;
@@ -52,6 +40,7 @@ public class App {
     }
 
     public static void printOptions() {
+        System.out.println("Escolha uma opção!");
         System.out.println("1 - Solicitar uma conversa com um novo usuário");
         System.out.println("2 - Inscrever-se em um tópico");
         System.out.println("3 - Enviar mensagem para um tópico");
@@ -64,15 +53,17 @@ public class App {
 
     static class MyRunnable implements Runnable {
         private Messenger messanger;
+        private Scanner scan;
 
-        public MyRunnable(Messenger messanger) {
+        public MyRunnable(Messenger messanger, Scanner scan) {
             this.messanger = messanger;
+            this.scan = scan;
         }
 
         @Override
         public void run() {
             try {
-                messanger.askPermissionToChat();
+                messanger.askPermissionToChat(this.scan);
             } catch (MqttException e) {
                 e.printStackTrace();
             }

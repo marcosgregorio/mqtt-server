@@ -36,7 +36,6 @@ public class MyCallback implements MqttCallback {
 		if (this.isOneToOneSolicitacion(topic)) {
 			this.handleMessageOneToOne();
 		}
-		System.out.println(topic + "  " + message.toString());
 	}
 
 	private String extractIdFromMessage(String message) {
@@ -58,45 +57,13 @@ public class MyCallback implements MqttCallback {
 	}
 
 	private void handleMessageOneToOne() throws MqttException {
-		Session session = new Session(messangerId, messangerId);
+		String sessionName;
+		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
+		Session session = new Session(sessionName, this.messangerId);
+		this.messanger.getUserId();
 		this.messanger.setSessions(session);
 
 		System.out.println("Você recebeu um pedido de sessão individual.");
-		// // Scanner scan = new Scanner(System.in);
-		
-		// System.out.println(" Deseja aceitar essa conexão?\n" +
-		// 		" Digite um valor maior que 0 para aprovar.\n" +
-		// 		" Digite 9 para bloquer o atual mensageiro");
-		// int answer = scan.nextInt();
-
-		// boolean blockUser = answer == 9;
-		// boolean acceptConnection = answer > 0;
-		// if (blockUser) {
-		// 	this.blockMessanger();
-		// } else if (acceptConnection) {
-		// 	this.createNewTopicWithMessanger();
-		// } else {
-		// 	System.out.println("Conexão recusada!");
-		// }
-		// scan.close();
-	}
-
-	private void createNewTopicWithMessanger() throws MqttException {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		LocalDateTime currenTime = LocalDateTime.now();
-		String timeFormatted = currenTime.format(formatter);
-		String newTopic = this.messangerId + 
-			"_" + this.messanger.getMyClient().getClientId() + 
-			"_" + timeFormatted;
-
-		System.out.println("Assine o topico abaixo para poder conversar com o usuario!");
-		System.out.println(newTopic);
-		this.messanger.subscribeToTopic(newTopic, 1);
-	}
-
-	private void blockMessanger() {
-		System.out.println("Usuario " + this.messangerId + " foi bloqueado!");
-		this.blockedIds.add(this.messangerId);
 	}
 
 	@Override
