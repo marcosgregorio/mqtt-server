@@ -80,7 +80,7 @@ public class MyCallback implements MqttCallback {
 	}
 
 	private void handleUserDisconnection() {
-		
+		//tenho que pegar o id do usuario e mudar no objeto de contatos o status para false!
 	}
 
 	@Override
