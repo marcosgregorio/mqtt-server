@@ -152,7 +152,7 @@ final public class Messenger {
 
         String answer = scan.nextLine();
         answer = answer.trim();
-        if (getConfirmAnswer(answer)) {
+        if (isConfirmAnswer(answer)) {
             System.out.println("Selecione uma sessão");
             int selectedSession = scan.nextInt();
             scan.nextLine();
@@ -166,7 +166,7 @@ final public class Messenger {
         }
     }
 
-    private boolean getConfirmAnswer(String answer) {
+    private boolean isConfirmAnswer(String answer) {
         return answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("S");
     }
 
