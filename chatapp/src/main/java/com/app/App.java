@@ -49,7 +49,6 @@ public class App {
         System.out.println("2 - Inscrever-se em um tópico");
         System.out.println("3 - Enviar mensagem para um tópico");
         System.out.println("4 - Sessões pendentes");
-        System.out.println("5 - Listar contatos");
     }
 
     public static void submitMessageOneToOne(Messenger messanger) {
