@@ -163,6 +163,8 @@ final public class Messenger {
                 System.out.println("Não encontrado o indice " + selectedSession);
                 return;
             }
+            String msg = "ID " + this.userId;
+            this.sendMessage(session.getSendersId() + "_Accepted", msg);
             this.subscribeToTopic(session.getSessionName(), 1);
         }
     }
@@ -172,9 +174,6 @@ final public class Messenger {
     }
 
     private void listSessions() {
-        if (this.getSessions().isEmpty()) {
-            System.out.println("Não há nenhuma sessão");
-        }
         int i = 0;
 
         for (Session session : this.getSessions()) {

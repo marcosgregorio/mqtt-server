@@ -33,11 +33,17 @@ public class MyCallback implements MqttCallback {
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		this.messangerId = this.extractIdFromMessage(message.toString());
+
 		if (this.isOneToOneSolicitacion(topic)) {
 			this.handleMessageOneToOne();
 		}
+		
 		if (this.isDisconnectedMessage(topic)) {
 			this.handleUserDisconnection();
+		}
+		
+		if (this.isAcceptedSession(topic)) {
+			this.handleAcceptedSession();
 		}
 	}
 
@@ -65,7 +71,7 @@ public class MyCallback implements MqttCallback {
 		Session session = new Session(sessionName, this.messangerId);
 		Contact contact = new Contact(this.messangerId, true);
 		
-		this.messanger.getUserId();
+		// this.messanger.getUserId();
 		this.messanger.setSessions(session);
 		this.messanger.addContacts(contact);
 
@@ -83,6 +89,18 @@ public class MyCallback implements MqttCallback {
 		//tenho que pegar o id do usuario e mudar no objeto de contatos o status para false!
 	}
 
+	private boolean isAcceptedSession(String topic) {
+		Pattern pattern = Pattern.compile("_Accepted");
+		Matcher matcher = pattern.matcher(topic);
+
+		return matcher.find();
+	}
+
+	private void handleAcceptedSession() {
+		Contact contact = new Contact(this.messangerId, true);
+		this.messanger.addContacts(contact);
+	}
+	
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		System.out.println();
