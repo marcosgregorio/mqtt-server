@@ -32,6 +32,9 @@ public class App {
                 case "5":
                     messanger.listOnlineUsers();
                     break;
+                case "6":
+                    messanger.createGroup();
+                    break;
                 case "9":
                     messanger.disconnectFromBroker();
                     System.out.println("Fechando aplicação...");
@@ -49,6 +52,8 @@ public class App {
         System.out.println("2 - Inscrever-se em um tópico");
         System.out.println("3 - Enviar mensagem para um tópico");
         System.out.println("4 - Sessões pendentes");
+        System.out.println("5 - Listar usuários");
+        System.out.println("6 - Criar grupo");
     }
 
     public static void submitMessageOneToOne(Messenger messanger) {

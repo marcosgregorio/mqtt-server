@@ -22,6 +22,7 @@ final public class Messenger {
     private IMqttToken token;
     private ArrayList<Session> sessions = new ArrayList<>();
     private ArrayList<Contact> contacts = new ArrayList<>();
+    private ArrayList<Group> groups = new ArrayList<>();
     
     public Messenger() throws MqttException {
         this.options = new MqttConnectOptions();
@@ -184,13 +185,17 @@ final public class Messenger {
 
     public void listOnlineUsers() {
         this.printContacts();
+    }
 
+    public void createGroup() {
+        
     }
 
     private void printContacts() {
         int i = 0;
         for (Contact contact : this.getContacts()) {
             System.out.println("[" + i + "]" + " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus());
+            
             i++;
         }
     }
