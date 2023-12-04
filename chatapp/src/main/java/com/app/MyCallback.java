@@ -34,20 +34,24 @@ public class MyCallback implements MqttCallback {
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		this.messangerId = this.extractIdFromMessage(message.toString());
 
-		if (this.isOneToOneSolicitacion(topic)) {
+		if (topic.endsWith("_Controll")) {
 			this.handleOneToOneSolicitacion();
 		}
 
-		if (this.isGroupSolicitacion(topic)) {
+		if (topic.endsWith("_Group")) {
 			this.handleGroupSolicitation();
 		}
 		
-		if (this.isDisconnectedMessage(topic)) {
+		if (topic.endsWith(" <DISCONNECTED>")) {
 			this.handleUserDisconnection();
 		}
 		
-		if (this.isAcceptedSession(topic)) {
-			this.handleAcceptedSession();
+		if (topic.endsWith("_Accepted")) {
+			this.handleAcceptedSession(topic);
+		}
+
+		if (topic.endsWith("_Message")) {
+			this.handleMessage(message.toString());
 		}
 	}
 
@@ -59,15 +63,16 @@ public class MyCallback implements MqttCallback {
 			id = matcher.group(1);
 			System.out.println("ID encontrado: " + id);
 		}
-		return id; }
-
-	private boolean isOneToOneSolicitacion(String topic) {
-		Pattern pattern = Pattern.compile("_Controll");
-		Matcher matcher = pattern.matcher(topic);
-
-		return matcher.find();
+		return id; 
 	}
 
+	// private boolean isOneToOneSolicitacion(String topic) {
+		// Pattern pattern = Pattern.compile("_Controll");
+		// Matcher matcher = pattern.matcher(topic);
+// 
+		// return matcher.find();
+	// }
+// 
 	private void handleOneToOneSolicitacion() throws MqttException {
 		String sessionName;
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
@@ -81,12 +86,12 @@ public class MyCallback implements MqttCallback {
 		System.out.println("Você recebeu um pedido de sessão individual.");
 	}
 
-	private boolean isGroupSolicitacion(String topic) {
-		Pattern pattern = Pattern.compile("_Group");
-		Matcher matcher = pattern.matcher(topic);
+	// private boolean isGroupSolicitacion(String topic) {
+	// 	Pattern pattern = Pattern.compile("_Group");
+	// 	Matcher matcher = pattern.matcher(topic);
 
-		return matcher.find();
-	}
+	// 	return matcher.find();
+	// }
 
 	private void handleGroupSolicitation() {
 		String sessionName;
@@ -99,27 +104,18 @@ public class MyCallback implements MqttCallback {
 		this.messanger.addContacts(contact);
 	}
 
-	private boolean isDisconnectedMessage(String topic) {
-		Pattern pattern = Pattern.compile(" <DISCONNECTED>");
-		Matcher matcher = pattern.matcher(topic);
-
-		return matcher.find();
-	}
-
 	private void handleUserDisconnection() {
 		//tenho que pegar o id do usuario e mudar no objeto de contatos o status para false!
 	}
 
-	private boolean isAcceptedSession(String topic) {
-		Pattern pattern = Pattern.compile("_Accepted");
-		Matcher matcher = pattern.matcher(topic);
-
-		return matcher.find();
+	private void handleAcceptedSession(String topic) throws MqttException {
+		Contact contact = new Contact(topic + "_Message", true);
+		this.messanger.addContacts(contact);
+		this.messanger.subscribeToTopic(topic + "_Message", 1);
 	}
 
-	private void handleAcceptedSession() {
-		Contact contact = new Contact(this.messangerId, true);
-		this.messanger.addContacts(contact);
+	private void handleMessage(String message) {
+		System.out.println(this.messangerId + ": " + message);
 	}
 	
 	@Override

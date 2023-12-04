@@ -23,7 +23,7 @@ final public class Messenger {
     private ArrayList<Session> sessions = new ArrayList<>();
     private ArrayList<Contact> contacts = new ArrayList<>();
     private ArrayList<Group> groups = new ArrayList<>();
-    
+
     public Messenger() throws MqttException {
         this.options = new MqttConnectOptions();
         this.userId = UUID.randomUUID().toString();
@@ -33,7 +33,6 @@ final public class Messenger {
         this.myClient.setCallback(myCallback);
 
         this.token = myClient.connect();
-        // this.token.
         token.waitForCompletion();
         int qualityOfSignal = 1;
         this.myClient.subscribe(this.controllId, qualityOfSignal);
@@ -93,15 +92,18 @@ final public class Messenger {
         String topic = id + "_Controll";
         String message = "O usuario com o ID " + this.userId
                 + " enviou uma solicitação de sessão para você.";
+        String topicFilter = id + "_" + this.getUserId() +  "_Accepted";
+        this.subscribeToTopic(topicFilter, 1);
         this.sendMessage(topic, message);
-        this.subscribeToTopic(topic, 1);
+        // this.subscribeToTopic(topic, 1);
     }
 
     public void subscribeToSpecifiedTopic(Scanner scan) throws MqttException {
         System.out.println("Digite o tópico que deseja se inscrever");
         String newTopic = scan.nextLine();
         System.out.println("Digite a qualidade do sinal que deseja ter.");
-        int qualityOfSignal = scan.nextInt();
+        // int qualityOfSignal = scan.nextInt();
+        int qualityOfSignal = 1;
         this.subscribeToTopic(newTopic, qualityOfSignal);
     }
 
@@ -129,10 +131,10 @@ final public class Messenger {
 
         System.out.println("Digite sua mensagem: ");
         message = scan.nextLine();
-        scan.nextLine();
         System.out.println("Enviando...");
 
-        this.sendMessage(selectedTopic, message);
+        String topicFilter = selectedTopic + "_" + this.getUserId() +  "_Message";
+        this.sendMessage(topicFilter, message);
     }
 
     public void printSignedTopics() {
@@ -145,33 +147,31 @@ final public class Messenger {
     }
 
     public void showPendentSessions(Scanner scan) throws MqttException {
+
+        if (this.getSessions().isEmpty()) {
+            System.out.println("Não há sessões para serem aceitas\n");
+            return;
+        }
         Session session = null;
+
         this.listSessions();
 
         System.out.println();
-        System.out.println("Deseja aceitar uma sessão? S/N");
-        System.out.println();
 
-        String answer = scan.nextLine();
-        answer = answer.trim();
-        if (isConfirmAnswer(answer)) {
-            System.out.println("Selecione uma sessão");
-            int selectedSession = scan.nextInt();
-            scan.nextLine();
-            try {
-                session = this.getSessions().get(selectedSession);
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("Não encontrado o indice " + selectedSession);
-                return;
-            }
-            String msg = "ID " + this.userId;
-            this.sendMessage(session.getSendersId() + "_Accepted", msg);
-            this.subscribeToTopic(session.getSessionName(), 1);
+        System.out.println("Selecione uma sessão");
+        int selectedSession = scan.nextInt();
+        scan.nextLine();
+        try {
+            session = this.getSessions().get(selectedSession);
+            this.getSessions().remove(selectedSession);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Não encontrado o indice " + selectedSession);
+            return;
         }
-    }
-
-    private boolean isConfirmAnswer(String answer) {
-        return answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("S");
+        String msg = "ID " + this.userId;
+        String topic = this.getUserId() + "_" + session.getSendersId() + "_Accepted";
+        this.sendMessage(topic, msg);
+        this.subscribeToTopic(topic + "_Message", 1);
     }
 
     private void listSessions() {
@@ -188,14 +188,14 @@ final public class Messenger {
     }
 
     public void createGroup() {
-        
+
     }
 
     private void printContacts() {
         int i = 0;
         for (Contact contact : this.getContacts()) {
             System.out.println("[" + i + "]" + " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus());
-            
+
             i++;
         }
     }
@@ -238,7 +238,7 @@ final public class Messenger {
     public void setContacts(ArrayList<Contact> contacts) {
         this.contacts = contacts;
     }
-    
+
     public void addContacts(Contact contact) {
         this.contacts.add(contact);
     }
