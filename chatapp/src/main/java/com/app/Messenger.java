@@ -11,6 +11,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
+import com.google.gson.Gson;
+
 final public class Messenger {
 
     private ArrayList<String> signedTopics = new ArrayList<>();
@@ -131,10 +133,14 @@ final public class Messenger {
 
         System.out.println("Digite sua mensagem: ");
         message = scan.nextLine();
+        MyMessage myMessage = new MyMessage(message, "message", this.getUserId());
+        Gson gson = new Gson();
+        String payload = gson.toJson(myMessage);
+
         System.out.println("Enviando...");
 
-        String topicFilter = selectedTopic + "_" + this.getUserId() +  "_Message";
-        this.sendMessage(topicFilter, message);
+        String topicFilter = selectedTopic;
+        this.sendMessage(topicFilter, payload);
     }
 
     public void printSignedTopics() {
@@ -188,7 +194,7 @@ final public class Messenger {
     }
 
     public void createGroup() {
-
+        
     }
 
     private void printContacts() {

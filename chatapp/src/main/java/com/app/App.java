@@ -7,7 +7,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public class App {
 
     public static void main(String[] args) throws Exception {
-        DatabaseConnection conn = new DatabaseConnection();
         Messenger messanger = new Messenger();
         String option;
         Scanner scan = new Scanner(System.in);

@@ -12,10 +12,13 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import com.google.gson.Gson;
+
 public class MyCallback implements MqttCallback {
 	private String messangerId;
 	private Messenger messanger;
 	private ArrayList<String> blockedIds = new ArrayList<>();
+	private String message;
 
 	public Messenger getClient() {
 		return messanger;
@@ -33,6 +36,7 @@ public class MyCallback implements MqttCallback {
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		this.messangerId = this.extractIdFromMessage(message.toString());
+		this.message = new String(message.getPayload());
 
 		if (topic.endsWith("_Controll")) {
 			this.handleOneToOneSolicitacion();
@@ -51,7 +55,7 @@ public class MyCallback implements MqttCallback {
 		}
 
 		if (topic.endsWith("_Message")) {
-			this.handleMessage(message.toString());
+			this.handleMessage();
 		}
 	}
 
@@ -66,13 +70,6 @@ public class MyCallback implements MqttCallback {
 		return id; 
 	}
 
-	// private boolean isOneToOneSolicitacion(String topic) {
-		// Pattern pattern = Pattern.compile("_Controll");
-		// Matcher matcher = pattern.matcher(topic);
-// 
-		// return matcher.find();
-	// }
-// 
 	private void handleOneToOneSolicitacion() throws MqttException {
 		String sessionName;
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
@@ -114,8 +111,10 @@ public class MyCallback implements MqttCallback {
 		this.messanger.subscribeToTopic(topic + "_Message", 1);
 	}
 
-	private void handleMessage(String message) {
-		System.out.println(this.messangerId + ": " + message);
+	private void handleMessage() {
+		Gson gson = new Gson();
+		MyMessage myMessage = gson.fromJson(this.message, MyMessage.class);
+		System.out.println(myMessage.id + ": " + myMessage.message);
 	}
 	
 	@Override
