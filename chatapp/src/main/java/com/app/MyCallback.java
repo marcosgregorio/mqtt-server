@@ -17,11 +17,10 @@ import com.google.gson.Gson;
 public class MyCallback implements MqttCallback {
 	private String messangerId;
 	private Messenger messanger;
-	private ArrayList<String> blockedIds = new ArrayList<>();
 	private String message;
 	private Gson gson;
 	private MyMessage MyMessage;
-	private Users onlineUsers;
+	// private Users onlineUsers;
 
 	public Messenger getClient() {
 		return messanger;
@@ -44,21 +43,29 @@ public class MyCallback implements MqttCallback {
 		this.messangerId = myMessage.id;
 
 		// if (myMessage.type.equals("USERS")) {
-		// 	this.setOnlineUsers();
+		// this.setOnlineUsers();
 		// }
 
 		if (myMessage.type.equals("Invite")) {
-			this.handleOneToOneSolicitacion();
+			this.handleOneToOneSolicitation();
 		}
 
 		if (myMessage.type.equals("Group")) {
+			this.createGroup(myMessage.message);
+		}
+
+		if (myMessage.type.equals("Group_Solicitation")) {
 			this.handleGroupSolicitation(myMessage.message);
 		}
-		
+
+		if (myMessage.type.equals("Accepted_Group")) {
+			this.handleAcceptedGroup(myMessage);
+		}
+
 		if (topic.endsWith(" <DISCONNECTED>")) {
 			this.handleUserDisconnection();
 		}
-		
+
 		if (myMessage.type.equals("Accepted")) {
 			this.handleAcceptedSession();
 		}
@@ -70,26 +77,42 @@ public class MyCallback implements MqttCallback {
 
 	private void setOnlineUsers() {
 		User user = new User(this.messangerId, true);
-		this.onlineUsers.users.add(user);
+		// this.onlineUsers.users.add(user);
 	}
 
-	private void handleOneToOneSolicitacion() throws MqttException {
+	private void handleOneToOneSolicitation() throws MqttException {
 		String sessionName;
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
 		Session session = new Session(sessionName, this.messangerId);
-		
+
 		this.messanger.setSessions(session);
 
 		System.out.println("Você recebeu um pedido de sessão individual.");
 	}
 
-	private void handleGroupSolicitation(String groupName) {
-		Group group = new Group(groupName, this.messangerId, null);
+	private void createGroup(String groupName) {
+		Contact contact = new Contact(new User(this.messangerId, true));
+		ArrayList<Contact> contacts = new ArrayList<>();
+		contacts.add(contact);
+
+		Group group = new Group(groupName, this.messangerId, contacts);
 		this.messanger.addGroup(group);
 	}
 
+	private void handleGroupSolicitation(String index) {
+		System.out.println("Alguem lhe enviou uma solicitação para entrar em um grupo.");
+		int groupIndex = Integer.parseInt(index);
+		Session session = new Session(messangerId, messangerId, groupIndex); 
+		this.messanger.addGroupSessions(session);
+	}
+
+	private void handleAcceptedGroup(MyMessage myMessage) {
+		this.messanger.setGroups(myMessage.groups);
+	}
+	
 	private void handleUserDisconnection() {
-		//tenho que pegar o id do usuario e mudar no objeto de contatos o status para false!
+		// tenho que pegar o id do usuario e mudar no objeto de contatos o status para
+		// false!
 	}
 
 	private void handleAcceptedSession() throws MqttException {
@@ -102,7 +125,7 @@ public class MyCallback implements MqttCallback {
 		MyMessage myMessage = gson.fromJson(this.message, MyMessage.class);
 		System.out.println(myMessage.id + ": " + myMessage.message);
 	}
-	
+
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		System.out.println();

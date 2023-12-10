@@ -36,4 +36,8 @@ public class Group {
     public void setContacts(ArrayList<Contact> contacts) {
         this.contacts = contacts;
     }
+
+    public void addContacts(Contact contact) {
+        this.contacts.add(contact);
+    }
 }

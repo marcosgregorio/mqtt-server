@@ -20,10 +20,10 @@ public class App {
                     messanger.askPermissionToChat(scan);
                     break;
                 case "2":
-                    messanger.subscribeToSpecifiedTopic(scan);
+                    messanger.sendMessageToSpecifiedContact(scan);
                     break;
                 case "3":
-                    messanger.sendMessageToSpecifiedContact(scan);
+                    messanger.showPendentGroupSessions(scan);
                     break;
                 case "4":
                     messanger.showPendentSessions(scan);
@@ -36,6 +36,9 @@ public class App {
                     break;
                 case "7":
                     messanger.listGroups();
+                    break;
+                case "8":
+                    messanger.enterInGroup(scan);
                     break;
                 case "9":
                     messanger.disconnectFromBroker();
@@ -51,16 +54,13 @@ public class App {
     public static void printOptions() {
         System.out.println("Escolha uma opção!");
         System.out.println("1 - Solicitar uma conversa com um novo usuário");
-        System.out.println("2 - Inscrever-se em um tópico");
-        System.out.println("3 - Enviar mensagem para um contato");
+        System.out.println("2 - Enviar mensagem para um contato");
+        System.out.println("3 - Sessões de grupo pendentes");
         System.out.println("4 - Sessões pendentes");
         System.out.println("5 - Listar usuários");
         System.out.println("6 - Criar grupo");
         System.out.println("7 - Listar grupos");
-    }
-
-    public static void submitMessageOneToOne(Messenger messanger) {
-
+        System.out.println("8 - Entrar em um grupo");
     }
 
     static class MyRunnable implements Runnable {
@@ -80,5 +80,5 @@ public class App {
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }

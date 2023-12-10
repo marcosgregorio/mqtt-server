@@ -23,6 +23,7 @@ final public class Messenger {
     private MqttAsyncClient myClient;
     private IMqttToken token;
     private ArrayList<Session> sessions = new ArrayList<>();
+    private ArrayList<Session> groupSessions = new ArrayList<>();
     private ArrayList<Contact> contacts = new ArrayList<>();
     private ArrayList<Group> groups = new ArrayList<>();
 
@@ -43,46 +44,6 @@ final public class Messenger {
         System.out.println("Este é seu ID: \n" + userId);
     }
 
-    public String getBroker() {
-        return broker;
-    }
-
-    public void setBroker(String broker) {
-        this.broker = broker;
-    }
-
-    public MqttConnectOptions getOptions() {
-        return options;
-    }
-
-    public void setOptions(MqttConnectOptions options) {
-        this.options = options;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public MqttAsyncClient getMyClient() {
-        return myClient;
-    }
-
-    public void setMyClient(MqttAsyncClient myClient) {
-        this.myClient = myClient;
-    }
-
-    public IMqttToken getToken() {
-        return token;
-    }
-
-    public void setToken(IMqttToken token) {
-        this.token = token;
-    }
-
     public void sendMessage(String topic, String message) throws MqttPersistenceException, MqttException {
         MqttMessage msg = new MqttMessage(message.getBytes());
         IMqttToken token = this.getMyClient().publish(topic, msg);
@@ -101,13 +62,53 @@ final public class Messenger {
         this.sendMessage(topic, payload);
     }
 
-    public void subscribeToSpecifiedTopic(Scanner scan) throws MqttException {
-        System.out.println("Digite o tópico que deseja se inscrever");
-        String newTopic = scan.nextLine();
-        System.out.println("Digite a qualidade do sinal que deseja ter.");
-        // int qualityOfSignal = scan.nextInt();
-        int qualityOfSignal = 1;
-        this.subscribeToTopic(newTopic, qualityOfSignal);
+    public void showPendentGroupSessions(Scanner scan) throws MqttException {
+
+        if (this.getGroupSessions().isEmpty()) {
+            System.out.println("Não há sessões para serem aceitas\n");
+            return;
+        }
+        Session session;
+        Group group;
+        this.listGroupSessions();
+
+        System.out.println();
+
+        System.out.println("Selecione uma sessão");
+        int selectedSession = scan.nextInt();
+        scan.nextLine();
+        try {
+            session = this.getGroupSessions().get(selectedSession);
+            this.getGroupSessions().remove(selectedSession);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Não encontrado o indice " + selectedSession);
+            return;
+        }
+        int groupIndex = session.getGroupIndex();
+
+        try {
+            Contact contact = new Contact(new User(session.getSessionName(), true));
+            this.getGroups().get(groupIndex).addContacts(contact);
+        } catch (Exception e) {
+            System.out.println("Não foi encontrado um grupo com esse index");
+            throw e;
+        }
+        ArrayList<Group> groupName = this.getGroups();
+        String msg = this.userId;
+        String topic = session.getSessionName() + "_Controll";
+        MyMessage myMessage = new MyMessage(topic, msg, "Accepted_Group", this.userId, groupIndex, groupName);
+        Gson gson = new Gson();
+        String payload = gson.toJson(myMessage);
+        this.sendMessage(topic, payload);
+    }
+
+    private void listGroupSessions() {
+        int i = 0;
+
+        for (Session session : this.getGroupSessions()) {
+            System.out.println("[" + i + "]" + " " + "Sessão: " + session.getSendersId());
+            i++;
+        }
     }
 
     public void subscribeToTopic(String topic, int qualityOfSignal) throws MqttException {
@@ -216,15 +217,17 @@ final public class Messenger {
         String groupName, topic, payload;
         MyMessage myMessage;
         Gson gson;
+        String admId = this.userId;
 
         System.out.println("Insira o nome do seu grupo:");
         groupName = scan.nextLine();
         topic = "GROUP";
-        myMessage = new MyMessage(topic, groupName, "Group", this.userId);
+        myMessage = new MyMessage(topic, groupName, "Group", admId);
         gson = new Gson();
         payload = gson.toJson(myMessage);
 
         this.sendMessage(topic, payload);
+        this.myClient.subscribe(groupName + "_" + admId, 1);
     }
 
     public void listGroups() {
@@ -239,19 +242,45 @@ final public class Messenger {
         int i = 0;
         for (Group group : this.getGroups()) {
             System.out.println("[" + i + "]" + " " + "Nome: " + group.getGroupName());
-            
-            if (group.getContacts().isEmpty()) {
-                System.out.println("Não há membros no grupo ainda!");
-                return;
+
+            if (group.getContacts() == null) {
+                System.out.println("Não há membros no grupo!");
+                continue;
             }
-            
+            System.out.println("Adm: " + group.getContacts().get(0).getName());
             for (Contact contact : group.getContacts()) {
                 System.out.println(
-                    " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus()
-                );
+                        " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus());
             }
             i++;
         }
+    }
+
+    public void enterInGroup(Scanner scan) throws MqttPersistenceException, MqttException {
+        Group selectedGroup;
+        this.listGroups();
+        System.out.println("Selecione um grupo");
+        int index = scan.nextInt();
+        scan.nextLine();
+
+        try {
+            selectedGroup = this.getGroups().get(index);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Não foi achado um grupo para o indice passado");
+            return;
+        }
+        String topic, payload;
+        MyMessage myMessage;
+        Gson gson;
+        String admId = selectedGroup.getAdministrator();
+        String message = Integer.toString(index);
+        topic = admId + "_Controll";
+
+        myMessage = new MyMessage(admId + "_Controll", message, "Group_Solicitation", this.userId);
+        gson = new Gson();
+        payload = gson.toJson(myMessage);
+
+        this.sendMessage(topic, payload);
     }
 
     public void disconnectFromBroker() throws MqttPersistenceException, MqttException {
@@ -307,5 +336,57 @@ final public class Messenger {
 
     public void addGroup(Group group) {
         this.groups.add(group);
+    }
+
+    public String getBroker() {
+        return broker;
+    }
+
+    public void setBroker(String broker) {
+        this.broker = broker;
+    }
+
+    public MqttConnectOptions getOptions() {
+        return options;
+    }
+
+    public void setOptions(MqttConnectOptions options) {
+        this.options = options;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public MqttAsyncClient getMyClient() {
+        return myClient;
+    }
+
+    public void setMyClient(MqttAsyncClient myClient) {
+        this.myClient = myClient;
+    }
+
+    public IMqttToken getToken() {
+        return token;
+    }
+
+    public void setToken(IMqttToken token) {
+        this.token = token;
+    }
+
+    public ArrayList<Session> getGroupSessions() {
+        return groupSessions;
+    }
+
+    public void setGroupSessions(ArrayList<Session> groupSessions) {
+        this.groupSessions = groupSessions;
+    }
+
+    public void addGroupSessions(Session groupSession) {
+        this.groupSessions.add(groupSession);
     }
 }
