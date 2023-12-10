@@ -1,27 +1,25 @@
 package com.app;
 
 final public class Contact {
-    private String name;
-    private boolean status;
+    private User user;
 
-    public Contact(String name, boolean status) {
-        this.name = name;
-        this.status = status;
+    public Contact(User user) {
+        this.user = user;
     }
 
     public String getName() {
-        return name;
+        return this.user.name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.user.name = name;
     }
 
     public boolean getStatus() {
-        return status;
+        return this.user.status;
     }
 
     public void setStatus(boolean status) {
-        this.status = status;
+        this.user.status = status;
     }
 }

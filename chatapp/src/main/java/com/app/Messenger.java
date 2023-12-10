@@ -38,6 +38,7 @@ final public class Messenger {
         token.waitForCompletion();
         int qualityOfSignal = 1;
         this.myClient.subscribe(this.controllId, qualityOfSignal);
+        this.myClient.subscribe("GROUP", qualityOfSignal); 
         myCallback.setClient(this);
         System.out.println("Este é seu ID: \n" + userId);
     }
@@ -49,7 +50,7 @@ final public class Messenger {
     public void setBroker(String broker) {
         this.broker = broker;
     }
-
+    
     public MqttConnectOptions getOptions() {
         return options;
     }
@@ -194,7 +195,7 @@ final public class Messenger {
     }
 
     private void addContact(String contactName) {
-		Contact contact = new Contact(contactName, true);
+		Contact contact = new Contact(new User(contactName, true));
 		this.addContacts(contact);
     }
 
@@ -202,8 +203,19 @@ final public class Messenger {
         this.printContacts();
     }
 
-    public void createGroup() {
-        
+    public void createGroup(Scanner scan) throws MqttPersistenceException, MqttException {
+        String groupName, topic, payload;
+        MyMessage myMessage;
+        Gson gson;
+
+        System.out.println("Insira o nome do seu grupo:");
+        groupName = scan.nextLine();
+        topic = "GROUP";
+        myMessage = new MyMessage(topic, groupName, "Group", this.userId);
+        gson = new Gson();
+        payload = gson.toJson(myMessage);
+
+        this.sendMessage(topic, payload);
     }
 
     private void printContacts() {

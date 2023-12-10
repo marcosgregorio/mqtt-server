@@ -32,7 +32,7 @@ public class App {
                     messanger.listOnlineUsers();
                     break;
                 case "6":
-                    messanger.createGroup();
+                    messanger.createGroup(scan);
                     break;
                 case "9":
                     messanger.disconnectFromBroker();

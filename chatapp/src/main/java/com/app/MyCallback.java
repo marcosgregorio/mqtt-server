@@ -21,6 +21,7 @@ public class MyCallback implements MqttCallback {
 	private String message;
 	private Gson gson;
 	private MyMessage MyMessage;
+	private Users onlineUsers;
 
 	public Messenger getClient() {
 		return messanger;
@@ -42,11 +43,15 @@ public class MyCallback implements MqttCallback {
 		MyMessage myMessage = gson.fromJson(this.message, MyMessage.class);
 		this.messangerId = myMessage.id;
 
+		// if (myMessage.type.equals("USERS")) {
+		// 	this.setOnlineUsers();
+		// }
+
 		if (myMessage.type.equals("Invite")) {
 			this.handleOneToOneSolicitacion();
 		}
 
-		if (topic.endsWith("_Group")) {
+		if (myMessage.type.equals("Group")) {
 			this.handleGroupSolicitation();
 		}
 		
@@ -63,15 +68,9 @@ public class MyCallback implements MqttCallback {
 		}
 	}
 
-	private String extractIdFromMessage(String message) {
-		String id = "";
-		Pattern pattern = Pattern.compile("ID ([a-fA-F0-9-]+)");
-		Matcher matcher = pattern.matcher(message);
-		if (matcher.find()) {
-			id = matcher.group(1);
-			System.out.println("ID encontrado: " + id);
-		}
-		return id; 
+	private void setOnlineUsers() {
+		User user = new User(this.messangerId, true);
+		this.onlineUsers.users.add(user);
 	}
 
 	private void handleOneToOneSolicitacion() throws MqttException {
@@ -79,24 +78,16 @@ public class MyCallback implements MqttCallback {
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
 		Session session = new Session(sessionName, this.messangerId);
 		
-		// this.messanger.getUserId();
 		this.messanger.setSessions(session);
 
 		System.out.println("Você recebeu um pedido de sessão individual.");
 	}
 
-	// private boolean isGroupSolicitacion(String topic) {
-	// 	Pattern pattern = Pattern.compile("_Group");
-	// 	Matcher matcher = pattern.matcher(topic);
-
-	// 	return matcher.find();
-	// }
-
 	private void handleGroupSolicitation() {
 		String sessionName;
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
 		Session session = new Session(sessionName, this.messangerId);
-		Contact contact = new Contact(this.messangerId, true);
+		Contact contact = new Contact(new User(this.messangerId, true));
 		
 		// this.messanger.getUserId();
 		this.messanger.setSessions(session);
@@ -108,7 +99,7 @@ public class MyCallback implements MqttCallback {
 	}
 
 	private void handleAcceptedSession() throws MqttException {
-		Contact contact = new Contact(this.messangerId, true);
+		Contact contact = new Contact(new User(this.messangerId, true));
 		this.messanger.addContacts(contact);
 	}
 
