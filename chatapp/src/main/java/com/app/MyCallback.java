@@ -75,11 +75,6 @@ public class MyCallback implements MqttCallback {
 		}
 	}
 
-	private void setOnlineUsers() {
-		User user = new User(this.messangerId, true);
-		// this.onlineUsers.users.add(user);
-	}
-
 	private void handleOneToOneSolicitation() throws MqttException {
 		String sessionName;
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
