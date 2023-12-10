@@ -38,7 +38,7 @@ final public class Messenger {
         token.waitForCompletion();
         int qualityOfSignal = 1;
         this.myClient.subscribe(this.controllId, qualityOfSignal);
-        this.myClient.subscribe("GROUP", qualityOfSignal); 
+        this.myClient.subscribe("GROUP", qualityOfSignal);
         myCallback.setClient(this);
         System.out.println("Este é seu ID: \n" + userId);
     }
@@ -50,7 +50,7 @@ final public class Messenger {
     public void setBroker(String broker) {
         this.broker = broker;
     }
-    
+
     public MqttConnectOptions getOptions() {
         return options;
     }
@@ -116,7 +116,7 @@ final public class Messenger {
     }
 
     public void sendMessageToSpecifiedContact(Scanner scan) throws MqttPersistenceException, MqttException {
-        Contact selectedContact; 
+        Contact selectedContact;
         String message;
         int index;
 
@@ -195,12 +195,21 @@ final public class Messenger {
     }
 
     private void addContact(String contactName) {
-		Contact contact = new Contact(new User(contactName, true));
-		this.addContacts(contact);
+        Contact contact = new Contact(new User(contactName, true));
+        this.addContacts(contact);
     }
 
     public void listOnlineUsers() {
         this.printContacts();
+    }
+
+    private void printContacts() {
+        int i = 0;
+        for (Contact contact : this.getContacts()) {
+            System.out.println("[" + i + "]" + " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus());
+
+            i++;
+        }
     }
 
     public void createGroup(Scanner scan) throws MqttPersistenceException, MqttException {
@@ -218,11 +227,29 @@ final public class Messenger {
         this.sendMessage(topic, payload);
     }
 
-    private void printContacts() {
-        int i = 0;
-        for (Contact contact : this.getContacts()) {
-            System.out.println("[" + i + "]" + " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus());
+    public void listGroups() {
+        if (this.getGroups().isEmpty()) {
+            System.out.println("Não há nenhum grupo criado ainda.");
+            return;
+        }
+        this.printGroups();
+    }
 
+    private void printGroups() {
+        int i = 0;
+        for (Group group : this.getGroups()) {
+            System.out.println("[" + i + "]" + " " + "Nome: " + group.getGroupName());
+            
+            if (group.getContacts().isEmpty()) {
+                System.out.println("Não há membros no grupo ainda!");
+                return;
+            }
+            
+            for (Contact contact : group.getContacts()) {
+                System.out.println(
+                    " " + "Nome: " + contact.getName() + " Status: " + contact.getStatus()
+                );
+            }
             i++;
         }
     }
@@ -268,5 +295,17 @@ final public class Messenger {
 
     public void addContacts(Contact contact) {
         this.contacts.add(contact);
+    }
+
+    public ArrayList<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(ArrayList<Group> groups) {
+        this.groups = groups;
+    }
+
+    public void addGroup(Group group) {
+        this.groups.add(group);
     }
 }

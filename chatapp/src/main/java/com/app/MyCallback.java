@@ -52,7 +52,7 @@ public class MyCallback implements MqttCallback {
 		}
 
 		if (myMessage.type.equals("Group")) {
-			this.handleGroupSolicitation();
+			this.handleGroupSolicitation(myMessage.message);
 		}
 		
 		if (topic.endsWith(" <DISCONNECTED>")) {
@@ -83,15 +83,9 @@ public class MyCallback implements MqttCallback {
 		System.out.println("Você recebeu um pedido de sessão individual.");
 	}
 
-	private void handleGroupSolicitation() {
-		String sessionName;
-		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
-		Session session = new Session(sessionName, this.messangerId);
-		Contact contact = new Contact(new User(this.messangerId, true));
-		
-		// this.messanger.getUserId();
-		this.messanger.setSessions(session);
-		this.messanger.addContacts(contact);
+	private void handleGroupSolicitation(String groupName) {
+		Group group = new Group(groupName, this.messangerId, null);
+		this.messanger.addGroup(group);
 	}
 
 	private void handleUserDisconnection() {
