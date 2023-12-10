@@ -69,7 +69,6 @@ final public class Messenger {
             return;
         }
         Session session;
-        Group group;
         this.listGroupSessions();
 
         System.out.println();
@@ -93,10 +92,11 @@ final public class Messenger {
             System.out.println("Não foi encontrado um grupo com esse index");
             throw e;
         }
-        ArrayList<Group> groupName = this.getGroups();
+        ArrayList<Group> groups = this.getGroups();
+        String groupName = this.getGroups().get(groupIndex).getGroupName();
         String msg = this.userId;
         String topic = session.getSessionName() + "_Controll";
-        MyMessage myMessage = new MyMessage(topic, msg, "Accepted_Group", this.userId, groupIndex, groupName);
+        MyMessage myMessage = new MyMessage(topic, msg, "Accepted_Group", this.userId, groupIndex, groups, groupName);
         Gson gson = new Gson();
         String payload = gson.toJson(myMessage);
         this.sendMessage(topic, payload);
@@ -288,6 +288,34 @@ final public class Messenger {
         topic = this.getControllId() + " <DISCONNECTED>";
         msg = "O usuário" + this.getUserId() + " se desconectou";
         this.sendMessage(topic, msg);
+    }
+
+    public void sendMessageToGroup(Scanner scan) throws MqttPersistenceException, MqttException {
+        Group selectedGroup;
+        this.listGroups();
+        System.out.println("Selecione um grupo");
+        int index = scan.nextInt();
+        scan.nextLine();
+
+        try {
+            selectedGroup = this.getGroups().get(index);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Não foi achado um grupo para o indice passado");
+            return;
+        }
+        String topic, payload;
+        MyMessage myMessage;
+        Gson gson;
+        String admId = selectedGroup.getAdministrator();
+        System.out.println("Digite sua mensagem:");
+        String message = scan.nextLine();
+        topic = selectedGroup.getGroupName() + "_" + admId;
+
+        myMessage = new MyMessage(topic, message, "Group_Message", this.userId);
+        gson = new Gson();
+        payload = gson.toJson(myMessage);
+
+        this.sendMessage(topic, payload);
     }
 
     public ArrayList<String> getSignedTopics() {

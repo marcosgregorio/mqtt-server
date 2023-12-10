@@ -44,6 +44,9 @@ public class App {
                     messanger.disconnectFromBroker();
                     System.out.println("Fechando aplicação...");
                     break;
+                case "10":
+                    messanger.sendMessageToGroup(scan);
+                    break;
                 default:
                     break;
             }
@@ -61,6 +64,8 @@ public class App {
         System.out.println("6 - Criar grupo");
         System.out.println("7 - Listar grupos");
         System.out.println("8 - Entrar em um grupo");
+        System.out.println("10 - Enviar messagem para um grupo");
+        System.out.println("9 - Sair");
     }
 
     static class MyRunnable implements Runnable {

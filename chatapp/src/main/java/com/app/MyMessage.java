@@ -10,6 +10,7 @@ public class MyMessage {
     public String topic;
     public int groupIndex;
     public ArrayList<Group> groups;
+    public String groupName;
     
     MyMessage(String message, String type, String id) {
         this.message = message;
@@ -24,13 +25,14 @@ public class MyMessage {
         this.id = id;
     }
 
-    MyMessage(String topic, String message, String type, String id, int groupIndex, ArrayList<Group> groups) {
+    MyMessage(String topic, String message, String type, String id, int groupIndex, ArrayList<Group> groups, String groupName) {
         this.topic = topic;
         this.message = message;
         this.type = type;
         this.id = id;
         this.groupIndex = groupIndex;
         this.groups = groups;
+        this.groupName = groupName;
     }
 
 }

@@ -42,10 +42,6 @@ public class MyCallback implements MqttCallback {
 		MyMessage myMessage = gson.fromJson(this.message, MyMessage.class);
 		this.messangerId = myMessage.id;
 
-		// if (myMessage.type.equals("USERS")) {
-		// this.setOnlineUsers();
-		// }
-
 		if (myMessage.type.equals("Invite")) {
 			this.handleOneToOneSolicitation();
 		}
@@ -60,6 +56,10 @@ public class MyCallback implements MqttCallback {
 
 		if (myMessage.type.equals("Accepted_Group")) {
 			this.handleAcceptedGroup(myMessage);
+		}
+
+		if (myMessage.type.equals("Group_Message")) {
+			this.handleMessageGroup();
 		}
 
 		if (topic.endsWith(" <DISCONNECTED>")) {
@@ -106,10 +106,17 @@ public class MyCallback implements MqttCallback {
 		this.messanger.addGroupSessions(session);
 	}
 
-	private void handleAcceptedGroup(MyMessage myMessage) {
+	private void handleAcceptedGroup(MyMessage myMessage) throws MqttException {
 		this.messanger.setGroups(myMessage.groups);
+		this.messanger.subscribeToTopic(myMessage.groupName + "_" + myMessage.message, 0);
 	}
-	
+
+	private void handleMessageGroup() {
+		Gson gson = new Gson();
+		MyMessage myMessage = gson.fromJson(this.message, MyMessage.class);
+		System.out.println(myMessage.id + ": " + myMessage.message);
+	}
+
 	private void handleUserDisconnection() {
 		// tenho que pegar o id do usuario e mudar no objeto de contatos o status para
 		// false!
