@@ -23,7 +23,7 @@ public class App {
                     messanger.subscribeToSpecifiedTopic(scan);
                     break;
                 case "3":
-                    messanger.sendMessageToSpecifiedTopic(scan);
+                    messanger.sendMessageToSpecifiedContact(scan);
                     break;
                 case "4":
                     messanger.showPendentSessions(scan);
@@ -49,7 +49,7 @@ public class App {
         System.out.println("Escolha uma opção!");
         System.out.println("1 - Solicitar uma conversa com um novo usuário");
         System.out.println("2 - Inscrever-se em um tópico");
-        System.out.println("3 - Enviar mensagem para um tópico");
+        System.out.println("3 - Enviar mensagem para um contato");
         System.out.println("4 - Sessões pendentes");
         System.out.println("5 - Listar usuários");
         System.out.println("6 - Criar grupo");

@@ -19,6 +19,8 @@ public class MyCallback implements MqttCallback {
 	private Messenger messanger;
 	private ArrayList<String> blockedIds = new ArrayList<>();
 	private String message;
+	private Gson gson;
+	private MyMessage MyMessage;
 
 	public Messenger getClient() {
 		return messanger;
@@ -35,10 +37,12 @@ public class MyCallback implements MqttCallback {
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		this.messangerId = this.extractIdFromMessage(message.toString());
 		this.message = new String(message.getPayload());
+		this.gson = new Gson();
+		MyMessage myMessage = gson.fromJson(this.message, MyMessage.class);
+		this.messangerId = myMessage.id;
 
-		if (topic.endsWith("_Controll")) {
+		if (myMessage.type.equals("Invite")) {
 			this.handleOneToOneSolicitacion();
 		}
 
@@ -50,11 +54,11 @@ public class MyCallback implements MqttCallback {
 			this.handleUserDisconnection();
 		}
 		
-		if (topic.endsWith("_Accepted")) {
-			this.handleAcceptedSession(topic);
+		if (myMessage.type.equals("Accepted")) {
+			this.handleAcceptedSession();
 		}
 
-		if (topic.endsWith("_Message")) {
+		if (myMessage.type.equals("Message")) {
 			this.handleMessage();
 		}
 	}
@@ -74,11 +78,9 @@ public class MyCallback implements MqttCallback {
 		String sessionName;
 		sessionName = this.messanger.getUserId() + "_" + this.messangerId;
 		Session session = new Session(sessionName, this.messangerId);
-		Contact contact = new Contact(this.messangerId, true);
 		
 		// this.messanger.getUserId();
 		this.messanger.setSessions(session);
-		this.messanger.addContacts(contact);
 
 		System.out.println("Você recebeu um pedido de sessão individual.");
 	}
@@ -105,10 +107,9 @@ public class MyCallback implements MqttCallback {
 		//tenho que pegar o id do usuario e mudar no objeto de contatos o status para false!
 	}
 
-	private void handleAcceptedSession(String topic) throws MqttException {
-		Contact contact = new Contact(topic + "_Message", true);
+	private void handleAcceptedSession() throws MqttException {
+		Contact contact = new Contact(this.messangerId, true);
 		this.messanger.addContacts(contact);
-		this.messanger.subscribeToTopic(topic + "_Message", 1);
 	}
 
 	private void handleMessage() {

@@ -94,10 +94,10 @@ final public class Messenger {
         String topic = id + "_Controll";
         String message = "O usuario com o ID " + this.userId
                 + " enviou uma solicitação de sessão para você.";
-        String topicFilter = id + "_" + this.getUserId() +  "_Accepted";
-        this.subscribeToTopic(topicFilter, 1);
-        this.sendMessage(topic, message);
-        // this.subscribeToTopic(topic, 1);
+        MyMessage myMessage = new MyMessage(topic, message, "Invite", this.getUserId());
+        Gson gson = new Gson();
+        String payload = gson.toJson(myMessage);
+        this.sendMessage(topic, payload);
     }
 
     public void subscribeToSpecifiedTopic(Scanner scan) throws MqttException {
@@ -114,18 +114,19 @@ final public class Messenger {
         this.signedTopics.add(topic);
     }
 
-    public void sendMessageToSpecifiedTopic(Scanner scan) throws MqttPersistenceException, MqttException {
-        String selectedTopic, message;
+    public void sendMessageToSpecifiedContact(Scanner scan) throws MqttPersistenceException, MqttException {
+        Contact selectedContact; 
+        String message;
         int index;
 
-        System.out.println("Qual tópico deseja enviar a mensagem?\n" +
-                "Tópicos assinados:");
-        this.printSignedTopics();
+        System.out.println("Qual contato deseja enviar a mensagem?\n" +
+                "Contatos:");
+        this.printContacts();
         index = scan.nextInt();
         scan.nextLine();
 
         try {
-            selectedTopic = this.signedTopics.get(index);
+            selectedContact = this.contacts.get(index);
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Não encontrado o indice " + index);
             return;
@@ -133,13 +134,13 @@ final public class Messenger {
 
         System.out.println("Digite sua mensagem: ");
         message = scan.nextLine();
-        MyMessage myMessage = new MyMessage(message, "message", this.getUserId());
+        MyMessage myMessage = new MyMessage(message, "Message", this.getUserId());
         Gson gson = new Gson();
         String payload = gson.toJson(myMessage);
 
         System.out.println("Enviando...");
 
-        String topicFilter = selectedTopic;
+        String topicFilter = selectedContact.getName() + "_Controll";
         this.sendMessage(topicFilter, payload);
     }
 
@@ -174,10 +175,13 @@ final public class Messenger {
             System.out.println("Não encontrado o indice " + selectedSession);
             return;
         }
-        String msg = "ID " + this.userId;
-        String topic = this.getUserId() + "_" + session.getSendersId() + "_Accepted";
-        this.sendMessage(topic, msg);
-        this.subscribeToTopic(topic + "_Message", 1);
+        this.addContact(session.getSendersId());
+        String msg = "Sessão aceita!";
+        String topic = session.getSendersId() + "_Controll";
+        MyMessage myMessage = new MyMessage(topic, msg, "Accepted", this.userId);
+        Gson gson = new Gson();
+        String payload = gson.toJson(myMessage);
+        this.sendMessage(topic, payload);
     }
 
     private void listSessions() {
@@ -187,6 +191,11 @@ final public class Messenger {
             System.out.println("[" + i + "]" + " " + "Sessão: " + session.getSendersId());
             i++;
         }
+    }
+
+    private void addContact(String contactName) {
+		Contact contact = new Contact(contactName, true);
+		this.addContacts(contact);
     }
 
     public void listOnlineUsers() {
